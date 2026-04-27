@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsightForge — Autonomous Data Analysis</title>
+  <meta name="description" content="InsightForge is an autonomous AI-powered data analysis platform. Upload a CSV, get automated preprocessing, ML model training, visualizations, and natural language queries." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-text">Insight<span class="brand-accent">Forge</span></span>
+    </div>
+    <div class="nav-status" id="nav-status">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Ready</span>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main class="main-container">
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 1 — Upload
+    ════════════════════════════════════════════════════════ -->
+    <section class="section active" id="section-upload">
+      <div class="hero-header">
+        <h1>Autonomous Data Analysis</h1>
+        <p class="hero-sub">Upload any CSV or Excel file. InsightForge handles preprocessing, ML model selection, visualization, and natural language queries — automatically.</p>
+      </div>
+
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">📂</div>
+        <p class="upload-title">Drop your dataset here</p>
+        <p class="upload-hint">CSV or Excel (.csv, .xlsx, .xls) · Max 50 MB</p>
+        <button class="btn btn-primary" id="upload-btn" onclick="document.getElementById('file-input').click()">
+          Browse File
+        </button>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden />
+      </div>
+
+      <div class="upload-info card" id="upload-info" style="display:none">
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">File</span><span class="info-val" id="info-filename">—</span></div>
+          <div class="info-item"><span class="info-label">Rows</span><span class="info-val" id="info-rows">—</span></div>
+          <div class="info-item"><span class="info-label">Columns</span><span class="info-val" id="info-cols">—</span></div>
+          <div class="info-item"><span class="info-label">Session</span><span class="info-val mono" id="info-session">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 2 — Preview
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-preview">
+      <div class="section-header">
+        <div class="step-badge">2</div>
+        <h2>Dataset Preview</h2>
+      </div>
+      <div class="card">
+        <div class="table-wrapper" id="preview-table-wrapper">
+          <p class="placeholder-text">Upload a file to see preview…</p>
+        </div>
+      </div>
+      <div class="action-bar">
+        <div class="preprocess-options">
+          <select id="sel-missing" class="sel">
+            <option value="mean">Missing: Mean</option>
+            <option value="median">Missing: Median</option>
+            <option value="mode">Missing: Mode</option>
+          </select>
+          <select id="sel-outlier" class="sel">
+            <option value="iqr">Outliers: IQR</option>
+            <option value="zscore">Outliers: Z-Score</option>
+            <option value="none">Outliers: None</option>
+          </select>
+          <select id="sel-encoding" class="sel">
+            <option value="onehot">Encode: One-Hot</option>
+            <option value="label">Encode: Label</option>
+          </select>
+          <select id="sel-scaling" class="sel">
+            <option value="standard">Scale: Standard</option>
+            <option value="minmax">Scale: MinMax</option>
+            <option value="none">Scale: None</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="btn-preprocess">🔧 Run Preprocessing</button>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 3 — Preprocessing Results
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-preprocess">
+      <div class="section-header">
+        <div class="step-badge">3</div>
+        <h2>Preprocessing Report</h2>
+      </div>
+      <div class="card" id="preprocess-report-card">
+        <p class="placeholder-text">Run preprocessing to see results…</p>
+      </div>
+      <div class="action-bar">
+        <div class="target-col-row">
+          <label class="field-label" for="target-col-input">Target Column <span class="label-hint">(leave blank for clustering)</span></label>
+          <input type="text" id="target-col-input" class="text-input" placeholder="e.g. price, species, survived" />
+        </div>
+        <button class="btn btn-primary" id="btn-analyze">🧠 Run Analysis</button>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 4 — Analysis Dashboard
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-analysis">
+      <div class="section-header">
+        <div class="step-badge">4</div>
+        <h2>Analysis Dashboard</h2>
+      </div>
+
+      <!-- Problem type + best model banner -->
+      <div class="banner-row" id="banner-row">
+        <div class="banner-card" id="banner-problem">
+          <div class="banner-icon">🎯</div>
+          <div><div class="banner-label">Problem Type</div><div class="banner-val" id="banner-problem-val">—</div></div>
+        </div>
+        <div class="banner-card" id="banner-best">
+          <div class="banner-icon">🏆</div>
+          <div><div class="banner-label">Best Model</div><div class="banner-val" id="banner-best-val">—</div></div>
+        </div>
+        <div class="banner-card" id="banner-metric">
+          <div class="banner-icon">📊</div>
+          <div><div class="banner-label">Best Score</div><div class="banner-val" id="banner-metric-val">—</div></div>
+        </div>
+      </div>
+
+      <!-- Model comparison table -->
+      <div class="card">
+        <h3 class="card-title">Model Comparison</h3>
+        <div class="table-wrapper" id="model-table-wrapper">
+          <p class="placeholder-text">Analysis results will appear here…</p>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" id="btn-visualize">📈 Generate Charts</button>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 5 — Visualization
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-visualize">
+      <div class="section-header">
+        <div class="step-badge">5</div>
+        <h2>Visualization Panel</h2>
+      </div>
+      <div class="chart-grid" id="chart-grid">
+        <p class="placeholder-text">Charts will appear here after analysis…</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 6 — NLP Query
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-nlp">
+      <div class="section-header">
+        <div class="step-badge">6</div>
+        <h2>Natural Language Query</h2>
+      </div>
+      <div class="card">
+        <div class="nlp-examples">
+          <span class="example-tag" onclick="setQuery(this)">Show me a summary</span>
+          <span class="example-tag" onclick="setQuery(this)">Plot the distribution of Age</span>
+          <span class="example-tag" onclick="setQuery(this)">Show rows where Salary > 50000</span>
+          <span class="example-tag" onclick="setQuery(this)">What is the average Income by City</span>
+          <span class="example-tag" onclick="setQuery(this)">Show top 10 rows by Revenue</span>
+          <span class="example-tag" onclick="setQuery(this)">What columns correlate with Price</span>
+        </div>
+        <div class="nlp-input-row">
+          <input type="text" id="nlp-input" class="text-input nlp-input" placeholder="Ask anything about your data…" />
+          <button class="btn btn-primary" id="btn-query">Ask</button>
+        </div>
+        <div id="nlp-result" class="nlp-result"></div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════
+         STEP 7 — Report
+    ════════════════════════════════════════════════════════ -->
+    <section class="section" id="section-report">
+      <div class="section-header">
+        <div class="step-badge">7</div>
+        <h2>Full Report</h2>
+      </div>
+      <div class="card" id="report-card">
+        <p class="placeholder-text">Generate a full report after completing analysis…</p>
+      </div>
+      <div class="action-bar">
+        <button class="btn btn-secondary" id="btn-report">📄 Download Report</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── PROGRESS STEPS BAR ── -->
+  <div class="progress-bar-container" id="progress-bar-container">
+    <div class="progress-steps">
+      <div class="prog-step active" data-step="1" onclick="goToStep(1)"><span>Upload</span></div>
+      <div class="prog-step" data-step="2" onclick="goToStep(2)"><span>Preview</span></div>
+      <div class="prog-step" data-step="3" onclick="goToStep(3)"><span>Preprocess</span></div>
+      <div class="prog-step" data-step="4" onclick="goToStep(4)"><span>Analyze</span></div>
+      <div class="prog-step" data-step="5" onclick="goToStep(5)"><span>Charts</span></div>
+      <div class="prog-step" data-step="6" onclick="goToStep(6)"><span>Query</span></div>
+      <div class="prog-step" data-step="7" onclick="goToStep(7)"><span>Report</span></div>
+    </div>
+  </div>
+
+  <!-- ── LOADER OVERLAY ── -->
+  <div class="loader-overlay" id="loader-overlay">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p id="loader-msg">Processing…</p>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div class="toast" id="toast"></div>
+
+  <script src="static/js/api.js"></script>
+  <script src="static/js/app.js"></script>
+</body>
+</html>
