@@ -51,7 +51,7 @@ async function handleFile(file) {
     const fd = new FormData();
     fd.append("file", file);
     const res = await API.upload(fd);
-    state.sessionId = res.data.session_id;
+    state.sessionId = res.session_id;
 
     $("info-filename").textContent = res.data.filename;
     $("info-rows").textContent = res.data.rows.toLocaleString();
