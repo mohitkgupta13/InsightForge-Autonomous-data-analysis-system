@@ -1,6 +1,8 @@
 /* api.js — All fetch() helpers for the InsightForge API */
 
-const BASE = "http://127.0.0.1:5000";
+// When served via Flask (http://127.0.0.1:5000) use relative URLs.
+// If you ever serve frontend separately, set this to "http://127.0.0.1:5000"
+const BASE = "";
 
 async function apiRequest(method, path, body = null, isFormData = false) {
   const opts = { method };
@@ -12,9 +14,27 @@ async function apiRequest(method, path, body = null, isFormData = false) {
       opts.body = JSON.stringify(body);
     }
   }
-  const res = await fetch(`${BASE}${path}`, opts);
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.message || `HTTP ${res.status}`);
+
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, opts);
+  } catch (networkErr) {
+    throw new Error(
+      `Network error — cannot reach the API. ` +
+      `Is the Flask server running at http://127.0.0.1:5000? (${networkErr.message})`
+    );
+  }
+
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(`HTTP ${res.status} — server returned non-JSON response`);
+  }
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${json.message || JSON.stringify(json)}`);
+  }
   return json;
 }
 

@@ -416,13 +416,40 @@ function setStatus(type, text) {
   $("status-text").textContent = text;
 }
 
+/* ── Toast (success / info only) ────────────────────────────── */
 let _toastTimer;
 function toast(msg, type = "info") {
+  if (type === "error") {
+    logError(msg);
+    return;
+  }
   const el = $("toast");
   el.textContent = msg;
   el.className = `toast show ${type}`;
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove("show"), 3500);
+  _toastTimer = setTimeout(() => el.classList.remove("show"), 4000);
+}
+
+/* ── Persistent Error Console ────────────────────────────── */
+function logError(msg) {
+  const console_el = $("error-console");
+  const body = $("error-console-body");
+  console_el.style.display = "flex";
+
+  const now = new Date().toLocaleTimeString();
+  const line = document.createElement("div");
+  line.className = "err-line";
+  line.innerHTML = `<span class="err-time">[${now}]</span>${escHtml(msg)}`;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+
+  // Also log to browser console
+  console.error("[InsightForge]", msg);
+}
+
+function clearErrors() {
+  $("error-console-body").innerHTML = "";
+  $("error-console").style.display = "none";
 }
 
 function escHtml(str) {

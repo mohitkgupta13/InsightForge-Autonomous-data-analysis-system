@@ -160,7 +160,7 @@ class PreprocessingPipeline:
             if df[col].dtype == object:
                 # Try parse as datetime
                 try:
-                    parsed_col = pd.to_datetime(df[col], infer_datetime_format=True)
+                    parsed_col = pd.to_datetime(df[col])
                     df[col] = parsed_col
                     parsed.append(col)
                 except Exception:
