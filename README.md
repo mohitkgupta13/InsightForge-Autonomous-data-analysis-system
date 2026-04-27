@@ -91,39 +91,9 @@ insightforge/
 
 ---
 
-## Quick Start
+## Setup & Installation
 
-### 1. Backend
-
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate        # Windows
-pip install -r requirements.txt
-python app.py
-# API running at http://127.0.0.1:5000
-```
-
-### 2. Frontend
-
-Open `frontend/index.html` directly in Chrome/Edge (or serve with any static server):
-
-```bash
-# Option A — Python simple server (from project root)
-python -m http.server 8080 --directory frontend
-# then open http://localhost:8080
-
-# Option B — Open directly
-start frontend/index.html
-```
-
-### 3. Run Tests
-
-```bash
-cd backend
-pip install pytest
-pytest ../tests/ -v
-```
+Please refer to our **[Setup Guide (SETUP.md)](SETUP.md)** for simple, step-by-step instructions on how to install and run InsightForge locally.
 
 ---
 
