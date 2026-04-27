@@ -21,7 +21,7 @@ def _allowed(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@upload_bp.route("/api/upload", methods=["POST"])
+@upload_bp.route("/api/upload", methods=["POST", "OPTIONS"])
 def upload_file():
     if "file" not in request.files:
         return jsonify({"status": "error", "message": "No file part in request"}), 400

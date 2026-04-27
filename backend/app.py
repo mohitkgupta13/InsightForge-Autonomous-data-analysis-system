@@ -43,19 +43,27 @@ def create_app() -> Flask:
         app.register_blueprint(bp)
 
     # ── Health check ────────────────────────────────────────────────────────
-    @app.route("/api/health", methods=["GET"])
+    @app.route("/api/health", methods=["GET", "OPTIONS"])
     def health():
         return jsonify({"status": "ok", "service": "InsightForge API"})
 
-    # ── Serve frontend index.html at / ──────────────────────────────────────
-    @app.route("/")
+    # ── Serve frontend index.html at / ────────────────────────────────────
+    @app.route("/", methods=["GET", "OPTIONS"])
     def serve_index():
-        return send_from_directory(FRONTEND_DIR, "index.html")
+        from flask import make_response
+        resp = make_response(send_from_directory(FRONTEND_DIR, "index.html"))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
-    # ── Serve frontend static assets ────────────────────────────────────────
-    @app.route("/static/<path:filename>")
+    # ── Serve frontend static assets (no-cache so JS/CSS changes apply instantly) ─
+    @app.route("/static/<path:filename>", methods=["GET", "OPTIONS"])
     def serve_static(filename):
-        return send_from_directory(os.path.join(FRONTEND_DIR, "static"), filename)
+        from flask import make_response
+        resp = make_response(
+            send_from_directory(os.path.join(FRONTEND_DIR, "static"), filename)
+        )
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     # ── Error handlers ──────────────────────────────────────────────────────
     @app.errorhandler(404)
