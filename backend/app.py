@@ -82,6 +82,12 @@ def create_app() -> Flask:
 
 
 if __name__ == "__main__":
+    # Prevent joblib/sklearn multiprocessing from crashing or triggering Flask reloader on Windows
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["LOKY_MAX_CPU_COUNT"] = "1"
+    os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
+
     application = create_app()
     print("\n[InsightForge] Open http://127.0.0.1:5000 in your browser\n")
-    application.run(debug=True, port=5000, use_reloader=True)
+    # Disable debug mode because the Flask debugger and reloader clash with joblib multiprocessing on Windows
+    application.run(debug=False, port=5000)
